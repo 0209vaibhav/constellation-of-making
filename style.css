@@ -1,0 +1,208 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap");
+
+* { 
+  box-sizing: border-box; 
+  margin: 0;
+  padding: 0;
+}
+
+html, body { 
+  height: 100%; 
+  margin: 0; 
+  font-family: "Inter", sans-serif;
+  font-weight: 100;
+}
+
+body{
+  background: #fff;
+  overflow: hidden;
+}
+
+#scene{
+  position: fixed;
+  inset: 0;
+}
+
+canvas{ 
+  display: block; 
+}
+
+/* preview card */
+#preview{
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 20;
+
+  max-width: min(420px, calc(100% - 32px));
+  padding: 12px 14px;
+
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.14);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px);
+
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  display: none;
+}
+
+/* Bottom Right-side controls */
+#controls{
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 30;
+    padding: 8px;
+  
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.14);
+  }
+  
+#controls button{
+  width: 28px;
+  height: 28px;
+
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,0.18);
+  background: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+  line-height: 0;              /* 🔑 key fix */
+  padding: 0;
+
+  cursor: pointer;
+  user-select: none;
+}
+
+#controls button:hover{
+  border-color: rgba(0,0,0,0.35);
+}
+
+#controls button:active{
+  transform: translateY(1px);
+}
+
+#tooltip{
+  font-family: "Inter", sans-serif;
+  font-weight: 100;
+
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+  display: none;
+
+  background: rgb(255, 255, 255);
+  border: 1px solid rgb(0, 0, 0);
+  border-radius: 8px;
+  padding: 6px 10px;
+
+  font-size: 10px;
+  line-height: 1.2;
+  color: #000000;
+
+  max-width: 240px;
+  white-space: normal;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+#preview{
+  display: none !important;
+}
+
+#labels{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+}
+
+.project-label{
+  font-family: "Inter", sans-serif;
+  font-weight: 100;
+
+  position: absolute;
+  transform: translateX(-50%);
+  pointer-events: none;
+
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(0,0,0,0.14);
+  border-radius: 8px;
+  padding: 6px 10px;
+
+  font-size: 10px;
+  line-height: 1.2;
+  color: #000;
+
+  max-width: 240px;
+  white-space: normal;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+#project-title {
+  position: fixed;
+  z-index: 60;
+  pointer-events: none;
+
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+
+  color: #ffffff;
+
+  background: rgb(0, 0, 0);
+  border-radius: 0px;
+
+  padding: 6px 10px;
+  max-width: 260px;
+  text-align: center;
+
+  box-shadow:
+    0 6px 16px rgba(0,0,0,0.08),
+    0 1px 2px rgba(0,0,0,0.12);
+
+  backdrop-filter: blur(6px);
+}
+
+#filters{
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 70;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 340px;
+  pointer-events: auto;
+}
+
+#filters .f{
+  border: 1px solid rgba(0,0,0,0.18);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(8px);
+  border-radius: 999px;
+  padding: 6px 10px;
+
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+
+  cursor: pointer;
+  user-select: none;
+}
+
+#filters .f.is-on{
+  border-color: rgba(0,0,0,0.35);
+  background: rgba(0,0,0,0.06);
+}

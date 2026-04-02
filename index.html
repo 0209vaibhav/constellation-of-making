@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Index — Mindmap</title>
+  
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js"
+      }
+    }
+    </script>
+  
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  
+
+<body>
+  <div id="scene"></div>
+  <div id="tooltip"></div>
+  <div id="labels"></div>
+  <div id="project-title"></div>
+
+  <div id="filters" aria-label="Filters">
+    <button class="f" data-kind="Title">Title</button>
+    <button class="f" data-kind="Subtitle">Subtitle</button>
+    <button class="f" data-kind="Location">Location</button>
+    <button class="f" data-kind="Area">Area</button>
+    <button class="f" data-kind="Scale">Scale</button>
+    <button class="f" data-kind="Description">Description</button>
+    <button class="f" data-kind="Category">Category</button>
+    <button class="f" data-kind="Concept">Concept</button>
+    <button class="f" data-kind="Method">Methods</button>
+  </div>
+
+  <div id="controls" aria-label="View controls">
+    <button id="btnZoomIn" type="button" title="Zoom in">＋</button>
+    <button id="btnZoomOut" type="button" title="Zoom out">－</button>
+    <button id="btnRecenter" type="button" title="Recenter">⟳</button>
+  </div>
+  
+  <script type="module" src="./script.js"></script>
+</body>
+</html>
