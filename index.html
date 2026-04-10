@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Index — Mindmap</title>
+    <title>Constellation of Making</title>
   
     <script type="importmap">
     {
@@ -16,31 +16,158 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   
+  <body>
+    <div id="scene"></div>
+    <div id="tooltip"></div>
+    <div id="labels"></div>
+    <div id="project-title"></div>
 
-<body>
-  <div id="scene"></div>
-  <div id="tooltip"></div>
-  <div id="labels"></div>
-  <div id="project-title"></div>
+    <!-- ── Title + subtitle + info icon ── -->
+    <div id="viz-header">
+      <div id="viz-title-wrap">
+        <h1 id="viz-title">Constellation of Making</h1>
+        <button id="btn-info" aria-label="About this visualisation">ⓘ</button>
+      </div>
+      <p id="viz-subtitle">ideas, scattered and connected</p>
+    </div>
 
-  <div id="filters" aria-label="Filters">
-    <button class="f" data-kind="Title">Title</button>
-    <button class="f" data-kind="Subtitle">Subtitle</button>
-    <button class="f" data-kind="Location">Location</button>
-    <button class="f" data-kind="Area">Area</button>
-    <button class="f" data-kind="Scale">Scale</button>
-    <button class="f" data-kind="Description">Description</button>
-    <button class="f" data-kind="Category">Category</button>
-    <button class="f" data-kind="Concept">Concept</button>
-    <button class="f" data-kind="Method">Methods</button>
-  </div>
+    <!-- ── Info modal overlay ── -->
+    <div id="info-overlay" aria-modal="true" role="dialog" aria-label="About">
+      <div id="info-modal">
 
-  <div id="controls" aria-label="View controls">
-    <button id="btnZoomIn" type="button" title="Zoom in">＋</button>
-    <button id="btnZoomOut" type="button" title="Zoom out">－</button>
-    <button id="btnRecenter" type="button" title="Recenter">⟳</button>
-  </div>
-  
-  <script type="module" src="./script.js"></script>
-</body>
+        <button id="info-close" aria-label="Close">✕</button>
+
+        <div id="info-modal-header">
+          <h2>Constellation of Making</h2>
+          <p>ideas, scattered and connected</p>
+        </div>
+
+        <div id="info-modal-body">
+
+          <!-- LEFT NAV -->
+          <nav id="info-nav">
+
+            <div class="nav-item active" data-target="s-what">
+              <div class="nav-track">
+                <div class="nav-dot"></div>
+                <div class="nav-line"></div>
+              </div>
+              <span class="nav-label">what</span>
+            </div>
+
+            <div class="nav-item" data-target="s-why">
+              <div class="nav-track">
+                <div class="nav-dot"></div>
+                <div class="nav-line"></div>
+              </div>
+              <span class="nav-label">why</span>
+            </div>
+
+            <div class="nav-item" data-target="s-read">
+              <div class="nav-track">
+                <div class="nav-dot"></div>
+                <div class="nav-line"></div>
+              </div>
+              <span class="nav-label">read it</span>
+            </div>
+
+            <div class="nav-item" data-target="s-made">
+              <div class="nav-track">
+                <div class="nav-dot"></div>
+                <div class="nav-line"></div>
+              </div>
+              <span class="nav-label">made with</span>
+            </div>
+
+            <div class="nav-item" data-target="s-who">
+              <div class="nav-track">
+                <div class="nav-dot"></div>
+                <div class="nav-line"></div>
+              </div>
+              <span class="nav-label">who</span>
+            </div>
+
+            <div class="nav-item" data-target="s-where">
+              <div class="nav-track">
+                <div class="nav-dot"></div>
+              </div>
+              <span class="nav-label">where</span>
+            </div>
+
+          </nav>
+
+          <!-- RIGHT SCROLL CONTENT -->
+          <div id="info-content">
+
+            <div class="content-section" id="s-what">
+              <div class="content-label">what</div>
+              <p>A 3D constellation of dots, each representing a fragment of a project — its title, concept, methods, and ideas. Every dot is a thought. Every cluster is a project.</p>
+            </div>
+
+            <div class="content-section" id="s-why">
+              <div class="content-label">why</div>
+              <p>To map a body of work not as a list, but as a living field — where relationships between ideas matter as much as the projects themselves.</p>
+            </div>
+
+            <div class="content-section" id="s-read">
+              <div class="content-label">read it</div>
+              <ul>
+                <li>Hover over any dot to reveal its project and connected fragments</li>
+                <li>Use the filters to isolate layers — titles, concepts, methods, and more</li>
+                <li>Rotate, zoom, and pan to explore the field from any angle</li>
+                <li>Click a highlighted dot to visit the project <em>(where available)</em></li>
+              </ul>
+            </div>
+
+            <div class="content-section" id="s-made">
+              <div class="content-label">made with</div>
+              <ul>
+                <li><strong>Three.js</strong> — 3D rendering and instanced dot mesh</li>
+                <li><strong>OrbitControls</strong> — rotate, zoom, and pan</li>
+                <li><strong>Vanilla JS</strong> — hover, raycasting, filter logic</li>
+                <li><strong>HTML & CSS</strong> — UI layer, tooltips, filters</li>
+                <li><strong>IBM Plex Mono + Inter</strong> — typography</li>
+              </ul>
+            </div>
+
+            <div class="content-section" id="s-who">
+              <div class="content-label">who</div>
+              <p>Made by <strong>Vaibhav Jain</strong></p>
+            </div>
+
+            <div class="content-section" id="s-where">
+              <div class="content-label">where</div>
+              <p><a href="#" id="github-link" target="_blank" rel="noopener noreferrer">GitHub ↗</a> — make your own constellation</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Bottom toolbar — filters + controls ── -->
+    <div id="toolbar">
+
+      <div id="filters" aria-label="Filters">
+        <button class="f" data-kind="Title">Title</button>
+        <button class="f" data-kind="Subtitle">Subtitle</button>
+        <button class="f" data-kind="Concept Text">Concept Text</button>
+        <button class="f" data-kind="Methods Text">Methods Text</button>
+        <button class="f" data-kind="Category">Category</button>
+        <button class="f" data-kind="Concept">Concept</button>
+        <button class="f" data-kind="Methods">Methods</button>
+      </div>
+
+      <div class="toolbar-divider"></div>
+
+      <div id="controls" aria-label="View controls">
+        <button id="btnZoomIn"   type="button" title="Zoom in">＋</button>
+        <button id="btnZoomOut"  type="button" title="Zoom out">－</button>
+        <button id="btnRecenter" type="button" title="Recenter">⟳</button>
+      </div>
+
+    </div>
+
+    <script type="module" src="./script.js"></script>
+  </body>
 </html>
