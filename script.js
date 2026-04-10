@@ -893,13 +893,13 @@ const PROJECTS = [
 
 // Colors for each dot type (must exist before buildDotItems / DOT_ITEMS)
 const FILTER_COLORS = {
-  Title: new THREE.Color("#000000"),
-  Subtitle: new THREE.Color("#808080"),
-  Category: new THREE.Color("#FF006E"),
-  Concept: new THREE.Color("#3A86FF"),
-  Methods: new THREE.Color("#FF7F11"),
-  "Concept Text": new THREE.Color("#8338EC"),
-  "Methods Text": new THREE.Color("#2EC4B6")
+  Title:           new THREE.Color("#000000"),
+  Subtitle:        new THREE.Color("#777777"),
+  Category:        new THREE.Color("#E63946"),
+  Concept:         new THREE.Color("#3A86FF"),
+  Methods:         new THREE.Color("#F4A200"),
+  "Concept Text":  new THREE.Color("#8BAFD4"),
+  "Methods Text":  new THREE.Color("#C9965A")
 };
 
 function buildDotItems(projects) {
