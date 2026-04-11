@@ -1231,7 +1231,18 @@ const dotPosition = dotPos;
 
 for (let i = 0; i < DOT_COUNT; i++) {
   const p = pts[i];
-  const s = DOT_SIZE * (0.8 + Math.random() * 0.5);
+  const label = DOT_ITEMS[i].label;
+  const sizeMap = {
+    "Title": 2.2,
+    "Subtitle": 1.6,
+    "Category": 1.8,
+    "Concept": 1.0,
+    "Methods": 1.0,
+    "Concept Text": 0.7,
+    "Methods Text": 0.7
+  };
+  const sizeMultiplier = sizeMap[label] || 1.0;
+  const s = DOT_SIZE * sizeMultiplier * (0.9 + Math.random() * 0.2);
 
   dotPos[i] = p.clone();
   dotVel[i] = new THREE.Vector3(
