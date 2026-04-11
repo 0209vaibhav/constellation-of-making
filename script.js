@@ -905,6 +905,26 @@ const FILTER_COLORS = {
 function buildDotItems(projects) {
   const items = [];
 
+  // collect unique categories
+  const categories = [...new Set(projects.map(p => p.category).filter(Boolean))];
+
+  // shared category dots — projectIndex -1, -2, etc.
+  const categoryDotIndex = {}; // { "Architecture": -1, "Computation": -2 }
+  categories.forEach((cat, i) => {
+    categoryDotIndex[cat] = -(i + 1);
+    items.push({
+      projectIndex: -(i + 1),
+      projectTitle: cat,
+      href: null,
+      kind: "Category",
+      label: "Category",
+      value: cat,
+      color: FILTER_COLORS["Category"] || new THREE.Color("#999999"),
+      isSharedCategory: true,
+      categoryName: cat
+    });
+  });
+
   projects.forEach((p, projectIndex) => {
     const add = (label, value, kind) => {
       if (!value) return;
@@ -916,26 +936,21 @@ function buildDotItems(projects) {
         kind: colorKey,
         label,
         value: String(value),
-        color: FILTER_COLORS[colorKey] || new THREE.Color("#999999")
+        color: FILTER_COLORS[colorKey] || new THREE.Color("#999999"),
+        isSharedCategory: false,
+        categoryName: p.category
       });
     };
-    
+
     add("Title", p.title);
     add("Subtitle", p.subtitle);
     add("Location", p.location);
     add("Scale", p.scale);
-    add("Category", p.category);
     add("Concept Text", p.conceptText);
     add("Methods Text", p.methodsText);
 
-    (p.concept || []).forEach(c => {
-      add("Concept", c, "Concept");
-    });
-
-    (p.methods || []).forEach(m => {
-      add("Methods", m, "Methods");
-    });
-
+    (p.concept || []).forEach(c => add("Concept", c, "Concept"));
+    (p.methods || []).forEach(m => add("Methods", m, "Methods"));
   });
 
   return items;
@@ -943,6 +958,20 @@ function buildDotItems(projects) {
 
 const DOT_ITEMS = buildDotItems(PROJECTS);
 console.log("DOT ITEMS:", DOT_ITEMS.length, DOT_ITEMS);
+
+// cache: categoryName -> dot index in DOT_ITEMS
+const categoryDotIdByName = new Map();
+
+function getCategoryDotId(categoryName) {
+  if (categoryDotIdByName.has(categoryName)) return categoryDotIdByName.get(categoryName);
+  for (let i = 0; i < DOT_ITEMS.length; i++) {
+    if (DOT_ITEMS[i].isSharedCategory && DOT_ITEMS[i].categoryName === categoryName) {
+      categoryDotIdByName.set(categoryName, i);
+      return i;
+    }
+  }
+  return null;
+}
 
 // -------------------- FILTER SYSTEM --------------------
 
@@ -955,7 +984,17 @@ const hubDotIdByProject = new Map();
 function getHubDotId(projectIndex) {
   if (hubDotIdByProject.has(projectIndex)) return hubDotIdByProject.get(projectIndex);
 
-  // Find the dot whose label is "Title" for this project
+  // shared category dots are their own hub
+  if (projectIndex < 0) {
+    for (let i = 0; i < DOT_ITEMS.length; i++) {
+      if (DOT_ITEMS[i].projectIndex === projectIndex) {
+        hubDotIdByProject.set(projectIndex, i);
+        return i;
+      }
+    }
+  }
+
+  // regular project — find Title dot
   for (let i = 0; i < DOT_ITEMS.length; i++) {
     const it = DOT_ITEMS[i];
     if (it.projectIndex === projectIndex && it.label === "Title") {
@@ -964,7 +1003,7 @@ function getHubDotId(projectIndex) {
     }
   }
 
-  // fallback: first dot that matches project
+  // fallback
   for (let i = 0; i < DOT_ITEMS.length; i++) {
     if (DOT_ITEMS[i].projectIndex === projectIndex) {
       hubDotIdByProject.set(projectIndex, i);
@@ -1492,6 +1531,30 @@ if (activeFilters.size > 0 && hoveredId === null) {
     labelsEl.innerHTML = "";
     return;
   }
+  
+  // for category super-hub, show all project title labels
+  if (hoveredProjectIndex < 0) {
+    labelsEl.innerHTML = "";
+    const rect = renderer.domElement.getBoundingClientRect();
+    const catName = DOT_ITEMS[hoveredId].categoryName;
+    for (let i = 0; i < DOT_COUNT; i++) {
+      const item = DOT_ITEMS[i];
+      if (item.label !== "Title" || item.categoryName !== catName) continue;
+      const div = document.createElement("div");
+      fillProjectLabelBubble(div, item);
+      const dp = dotPosition[i];
+      if (!dp) continue;
+      const p = dp.clone();
+      group.localToWorld(p);
+      p.project(camera);
+      const x = rect.left + (p.x * 0.5 + 0.5) * rect.width;
+      const y = rect.top  + (-p.y * 0.5 + 0.5) * rect.height;
+      div.style.left = `${x}px`;
+      div.style.top  = `${y + 6}px`;
+      labelsEl.appendChild(div);
+    }
+    return;
+  }
 
   // ensure we have enough label divs
   while (labelPool.length < projectDotIds.length) {
@@ -1531,52 +1594,103 @@ if (activeFilters.size > 0 && hoveredId === null) {
   
     labelsEl.appendChild(div);
   }
-  
+
+  // remove old category anchor tooltip
+  const old = document.getElementById("category-anchor-tooltip");
+  if (old) old.remove();
+
+  // show category dot tooltip if hovering a regular project
+  if (hoveredProjectIndex !== null && hoveredProjectIndex >= 0) {
+    const catName = DOT_ITEMS[hoveredId]?.categoryName;
+    const catDotId = catName ? getCategoryDotId(catName) : null;
+    if (catDotId !== null) showCategoryAnchorTooltip(catDotId);
+  }
+
 }
 
 function buildNetworkForProject(dotIds, projectIndex) {
-  // hide if not enough points
-  if (!dotIds || dotIds.length < 2 || projectIndex === null) {
+  if (!dotIds || dotIds.length < 1 || projectIndex === null) {
     networkLines.visible = false;
     return;
   }
 
-  const hubId = getHubDotId(projectIndex);
-  if (hubId === null) {
-    networkLines.visible = false;
-    return;
-  }
-
+  const P = dotPos;
   const segs = [];
 
-  // IMPORTANT:
-  // use your CURRENT dot positions array.
-  // If your moving system uses dotPos[], use dotPos.
-  // If you use dotPosition[], keep dotPosition.
-  const P = (typeof dotPos !== "undefined") ? dotPos : dotPosition;
+  // CASE A — hovering a shared category dot
+  if (projectIndex < 0) {
+    const catDotId = getHubDotId(projectIndex);
+    if (catDotId === null) { networkLines.visible = false; return; }
 
-  const hubP = P[hubId];
-  if (!hubP) {
-    networkLines.visible = false;
-    return;
+    const catP = P[catDotId];
+    const catName = DOT_ITEMS[catDotId].categoryName;
+
+    // connect category dot -> every Title dot of matching category
+    for (let i = 0; i < DOT_COUNT; i++) {
+      const item = DOT_ITEMS[i];
+      if (item.label === "Title" && item.categoryName === catName) {
+        const p = P[i];
+        if (p) segs.push(catP.x, catP.y, catP.z, p.x, p.y, p.z);
+      }
+    }
+
+  // CASE B — hovering a regular project dot
+  } else {
+    const hubId = getHubDotId(projectIndex);
+    if (hubId === null) { networkLines.visible = false; return; }
+
+    const hubP = P[hubId];
+
+    // connect hub -> every other dot in the project
+    for (const id of dotIds) {
+      if (id === hubId) continue;
+      const p = P[id];
+      if (p) segs.push(hubP.x, hubP.y, hubP.z, p.x, p.y, p.z);
+    }
+
+    // connect hub -> shared category dot
+    const catName = DOT_ITEMS[hubId].categoryName;
+    const catDotId = getCategoryDotId(catName);
+    if (catDotId !== null) {
+      const catP = P[catDotId];
+      if (catP) segs.push(hubP.x, hubP.y, hubP.z, catP.x, catP.y, catP.z);
+    }
   }
 
-  // Connect hub -> every other dot in the project
-  for (const id of dotIds) {
-    if (id === hubId) continue;
-
-    const p = P[id];
-    if (!p) continue;
-
-    segs.push(hubP.x, hubP.y, hubP.z, p.x, p.y, p.z);
-  }
+  if (segs.length === 0) { networkLines.visible = false; return; }
 
   const arr = new Float32Array(segs);
   networkLines.geometry.setAttribute("position", new THREE.BufferAttribute(arr, 3));
   networkLines.geometry.computeBoundingSphere();
   networkLines.frustumCulled = false;
   networkLines.visible = true;
-  
+}
+
+function showCategoryAnchorTooltip(catDotId) {
+  if (catDotId === null || catDotId === undefined) return;
+
+  const item = DOT_ITEMS[catDotId];
+  if (!item) return;
+
+  const div = document.createElement("div");
+  fillProjectLabelBubble(div, item);
+
+  const dp = dotPos[catDotId];
+  if (!dp) return;
+
+  const p = dp.clone();
+  group.localToWorld(p);
+  p.project(camera);
+
+  const rect = renderer.domElement.getBoundingClientRect();
+  const x = rect.left + (p.x * 0.5 + 0.5) * rect.width;
+  const y = rect.top  + (-p.y * 0.5 + 0.5) * rect.height;
+
+  div.style.left = `${x}px`;
+  div.style.top  = `${y + 6}px`;
+  div.id = "category-anchor-tooltip";
+
+  labelsEl.appendChild(div);
 }
 
 const mouse = new THREE.Vector2();
@@ -1603,10 +1717,19 @@ function setHover(id) {
   if (hoveredId !== null) {
     hoveredProjectIndex = dotProjectIndex[hoveredId];
     projectDotIds = [];
-    for (let i = 0; i < DOT_COUNT; i++) {
-      if (dotProjectIndex[i] === hoveredProjectIndex) projectDotIds.push(i);
+
+    // CASE A — hovering shared category dot
+    if (hoveredProjectIndex < 0) {
+      projectDotIds = [hoveredId];
+    } else {
+      // CASE B — regular project dot
+      for (let i = 0; i < DOT_COUNT; i++) {
+        if (dotProjectIndex[i] === hoveredProjectIndex) projectDotIds.push(i);
+      }
     }
+
     buildNetworkForProject(projectDotIds, hoveredProjectIndex);
+
   } else {
     hoveredProjectIndex = null;
     projectDotIds = [];
@@ -1614,11 +1737,101 @@ function setHover(id) {
 
   if (hoveredId !== null) {
 
-    // fade ALL base dots
     dotMat.opacity = 0.08;
     dotMat.needsUpdate = true;
 
-    // bump the directly hovered dot
+    // reset all filter layers
+    for (const kind in filterLayers) {
+      filterLayers[kind].count = 0;
+      filterLayers[kind].visible = false;
+    }
+
+    // CASE A — category super-hub hover
+    if (hoveredProjectIndex < 0) {
+      const catName = DOT_ITEMS[hoveredId].categoryName;
+
+      // collect all dots belonging to this category's projects
+      const catProjectIndices = new Set();
+      for (let i = 0; i < DOT_COUNT; i++) {
+        if (DOT_ITEMS[i].categoryName === catName && !DOT_ITEMS[i].isSharedCategory) {
+          catProjectIndices.add(DOT_ITEMS[i].projectIndex);
+        }
+      }
+
+      // show category dot itself at 1.9x
+      dummy.position.copy(dotPos[hoveredId]);
+      dummy.scale.setScalar(dotScaleArr[hoveredId] * 1.9);
+      dummy.updateMatrix();
+
+      const catLayer = filterLayers["Category"];
+      if (catLayer) {
+        catLayer.setMatrixAt(0, dummy.matrix);
+        catLayer.count = 1;
+        catLayer.instanceMatrix.needsUpdate = true;
+        catLayer.visible = true;
+      }
+
+      // show all Title dots of matching category
+      const titleLayer = filterLayers["Title"];
+      if (titleLayer) {
+        let k = 0;
+        for (let i = 0; i < DOT_COUNT; i++) {
+          const item = DOT_ITEMS[i];
+          if (item.label === "Title" && catProjectIndices.has(item.projectIndex)) {
+            dummy.position.copy(dotPos[i]);
+            dummy.scale.setScalar(dotScaleArr[i]);
+            dummy.updateMatrix();
+            titleLayer.setMatrixAt(k, dummy.matrix);
+            k++;
+          }
+        }
+        titleLayer.count = k;
+        titleLayer.instanceMatrix.needsUpdate = true;
+        titleLayer.visible = k > 0;
+      }
+
+    // CASE B — regular project hover
+    } else {
+
+      // show project dots via filter layers
+      for (const kind in filterLayers) {
+        const layer = filterLayers[kind];
+        let k = 0;
+        for (const di of projectDotIds) {
+          if (DOT_ITEMS[di].label !== kind) continue;
+          dummy.position.copy(dotPos[di]);
+          dummy.scale.setScalar(dotScaleArr[di]);
+          dummy.updateMatrix();
+          layer.setMatrixAt(k, dummy.matrix);
+          k++;
+        }
+        if (k > 0) {
+          layer.count = k;
+          layer.instanceMatrix.needsUpdate = true;
+          layer.visible = true;
+        }
+      }
+
+      // show shared category dot at 1.4x
+      const catName = DOT_ITEMS[hoveredId]?.categoryName;
+      const catDotId = catName ? getCategoryDotId(catName) : null;
+      if (catDotId !== null) {
+        const catLayer = filterLayers["Category"];
+        if (catLayer) {
+          dummy.position.copy(dotPos[catDotId]);
+          dummy.scale.setScalar(dotScaleArr[catDotId] * 1.4);
+          dummy.updateMatrix();
+
+          const existingCount = catLayer.count || 0;
+          catLayer.setMatrixAt(existingCount, dummy.matrix);
+          catLayer.count = existingCount + 1;
+          catLayer.instanceMatrix.needsUpdate = true;
+          catLayer.visible = true;
+        }
+      }
+    }
+
+    // bump hovered dot
     baseMatrix[hoveredId].decompose(tmpPos, tmpQuat, tmpScale);
     dummy.position.copy(tmpPos);
     dummy.quaternion.copy(tmpQuat);
@@ -1626,30 +1839,6 @@ function setHover(id) {
     dummy.updateMatrix();
     dots.setMatrixAt(hoveredId, dummy.matrix);
     dots.instanceMatrix.needsUpdate = true;
-
-    // use filterLayers directly — same meshes, same colors, guaranteed to work
-    for (const kind in filterLayers) {
-      filterLayers[kind].count = 0;
-      filterLayers[kind].visible = false;
-    }
-
-    for (const kind in filterLayers) {
-      const layer = filterLayers[kind];
-      let k = 0;
-      for (const di of projectDotIds) {
-        if (DOT_ITEMS[di].label !== kind) continue;
-        dummy.position.copy(dotPos[di]);
-        dummy.scale.setScalar(dotScaleArr[di]);
-        dummy.updateMatrix();
-        layer.setMatrixAt(k, dummy.matrix);
-        k++;
-      }
-      if (k > 0) {
-        layer.count = k;
-        layer.instanceMatrix.needsUpdate = true;
-        layer.visible = true;
-      }
-    }
 
     highlightDots.visible = false;
     hoverDot.visible = false;
@@ -1659,11 +1848,9 @@ function setHover(id) {
 
   } else {
 
-    // restore base dots
     dotMat.opacity = 0.9;
     dotMat.needsUpdate = true;
 
-    // hide all filter layers
     for (const kind in filterLayers) {
       filterLayers[kind].count = 0;
       filterLayers[kind].visible = false;
@@ -1673,6 +1860,9 @@ function setHover(id) {
     highlightDots.visible = false;
     highlightDots.count = 0;
     networkLines.visible = false;
+
+    const old = document.getElementById("category-anchor-tooltip");
+    if (old) old.remove();
 
     showTooltipForDot(null);
     showProjectTitle(null);
