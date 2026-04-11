@@ -1451,6 +1451,12 @@ function showProjectTitle(dotId) {
     return;
   }
 
+  // shared category dot — show as category tooltip instead
+  if (item.isSharedCategory) {
+    projectTitleEl.style.display = "none";
+    return;
+  }
+
   projectTitleEl.textContent = item.projectTitle || "";
   projectTitleEl.style.display = "block";
 }
@@ -1737,13 +1743,18 @@ function setHover(id) {
 
   if (hoveredId !== null) {
 
-    dotMat.opacity = 0.08;
+    dotMat.opacity = hoveredProjectIndex < 0 ? 0.06 : 0.08;
     dotMat.needsUpdate = true;
 
     // reset all filter layers
     for (const kind in filterLayers) {
       filterLayers[kind].count = 0;
       filterLayers[kind].visible = false;
+    }
+
+    // force all filter layers off immediately
+    for (const kind in filterLayers) {
+      filterLayers[kind].instanceMatrix.needsUpdate = true;
     }
 
     // CASE A — category super-hub hover
@@ -1978,8 +1989,8 @@ updateFilterLayers();
     buildNetworkForProject(projectDotIds, hoveredProjectIndex);
   } 
 
-  // keep filter overlay synced while dots move
-  if (activeFilters.size && (t % 10 === 0)) {
+  // keep filter overlay synced while dots move — but not while hovering
+  if (activeFilters.size && (t % 10 === 0) && hoveredId === null) {
     updateFilterLayers();
   }
   
