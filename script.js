@@ -1712,6 +1712,7 @@ function showCategoryAnchorTooltip(catDotId) {
 
 const mouse = new THREE.Vector2();
 let hoveredId = null;
+let lockedId = null;
 let isHovering = false;
 let isPointerDown = false;
 let isDragging = false;
@@ -1721,7 +1722,7 @@ let projectDotIds = [];
 let mouseDirty = true;
 let hoverHoldUntil = 0;
 let filterDotIds = [];
-const HOVER_HOLD_MS = 160; // keep hover for 160ms even if raycast misses
+const HOVER_HOLD_MS = 160;
 
 // -------------------- FILTER STATE --------------------
 
@@ -1902,12 +1903,35 @@ mount.addEventListener("pointermove", (e) => {
 });
 
 mount.addEventListener("click", () => {
-  if (moved) return; // 👈 THIS IS THE KEY LINE
+  if (moved) return;
+
+  // if locked, clicking empty space unlocks
+  if (lockedId !== null && hoveredId === null) {
+    lockedId = null;
+    setHover(null);
+    return;
+  }
+
+  // clicking same dot unlocks
+  if (lockedId !== null && hoveredId === lockedId) {
+    lockedId = null;
+    setHover(null);
+    return;
+  }
+
+  // clicking a new dot while locked — unlock and relock on new dot
+  if (lockedId !== null && hoveredId !== null) {
+    lockedId = hoveredId;
+    return;
+  }
 
   if (hoveredId === null) return;
-  const item = DOT_ITEMS[hoveredId];
-  if (!item || !item.href) return;
-  window.open(item.href, "_blank", "noopener,noreferrer");
+
+  // lock the current hover
+  lockedId = hoveredId;
+
+  // if dot has a link, open it only if NOT locking (i.e. already locked)
+  // we skip link opening on first click — use double click for links instead
 });
 
   //Energetic / expressive
@@ -1927,7 +1951,7 @@ function animate() {
   const now = performance.now();
 
   // Only update hover if mouse moved and we're not dragging
-  if (!isPointerDown && mouseDirty) {
+  if (!isPointerDown && mouseDirty && lockedId === null) {
     mouseDirty = false;
   
     raycaster.setFromCamera(mouse, camera);
@@ -1937,14 +1961,13 @@ function animate() {
       setHover(hits[0].instanceId);
       hoverHoldUntil = now + HOVER_HOLD_MS;
     } else {
-      // if we recently had a hover, keep it alive briefly
       if (hoveredId !== null && now < hoverHoldUntil) {
         // keep current hover
       } else {
         setHover(null);
       }
     }
-  } 
+  }
 
 // --- free random drift (Brownian motion)
 const speedScale = isHovering ? 0.25 : 1.0;
@@ -2027,7 +2050,13 @@ infoOverlay.addEventListener("click", (e) => {
 });
 
 window.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") infoOverlay.classList.remove("is-open");
+  if (e.key === "Escape") {
+    infoOverlay.classList.remove("is-open");
+    if (lockedId !== null) {
+      lockedId = null;
+      setHover(null);
+    }
+  }
 });
 
 // ── Scroll-spy — left nav follows right scroll ──
