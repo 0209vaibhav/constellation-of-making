@@ -1990,6 +1990,14 @@ function setHover(id) {
   }
 
   dots.instanceMatrix.needsUpdate = true;
+
+  // update cursor
+  if (hoveredId === null) {
+    mount.style.cursor = "";
+  } else {
+    const item = DOT_ITEMS[hoveredId];
+    mount.style.cursor = item && item.href ? "pointer" : "crosshair";
+  }
 }
 
 mount.addEventListener("pointermove", (e) => {
