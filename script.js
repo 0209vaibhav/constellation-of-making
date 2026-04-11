@@ -906,19 +906,20 @@ function buildDotItems(projects) {
   const items = [];
 
   projects.forEach((p, projectIndex) => {
-    const add = (label, value, kind = "field") => {
+    const add = (label, value, kind) => {
       if (!value) return;
+      const colorKey = kind || label;
       items.push({
         projectIndex,
         projectTitle: p.title,
         href: p.href,
-        kind,
+        kind: colorKey,
         label,
         value: String(value),
-        color: FILTER_COLORS[kind] || new THREE.Color("#999999")
+        color: FILTER_COLORS[colorKey] || new THREE.Color("#999999")
       });
     };
-
+    
     add("Title", p.title);
     add("Subtitle", p.subtitle);
     add("Location", p.location);
@@ -1121,6 +1122,7 @@ const dotMat = new THREE.MeshBasicMaterial({
 // MAIN DOTS MESH (black)
 const dots = new THREE.InstancedMesh(dotGeo, dotMat, DOT_COUNT);
 dots.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+dots.renderOrder = 1;
 group.add(dots);
 
 // -------------------- FILTER OVERLAY DOTS (one layer per type) --------------------
@@ -1144,7 +1146,7 @@ for (const [kind, hex] of Object.entries(FILTER_COLORS)) {
 // Highlight dot (separate mesh so it stays crisp when others fade)
 const hoverDot = new THREE.Mesh(
   dotGeo,
-  new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 1 })
+  new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 })
 );
 hoverDot.visible = false;
 group.add(hoverDot);
@@ -1200,7 +1202,6 @@ for (let i = 0; i < DOT_COUNT; i++) {
   );
   dotScaleArr[i] = s;
 
-  // map dot -> project
   dotProjectIndex[i] = DOT_ITEMS[i].projectIndex;
 
   dummy.position.copy(dotPos[i]);
@@ -1209,7 +1210,7 @@ for (let i = 0; i < DOT_COUNT; i++) {
 
   dots.setMatrixAt(i, dummy.matrix);
   baseMatrix[i] = dummy.matrix.clone();
-  dots.setColorAt(i, DOT_ITEMS[i].color);
+  dots.setColorAt(i, new THREE.Color("#111111"));
 }
 
 if (dots.instanceColor) dots.instanceColor.needsUpdate = true;
@@ -1218,10 +1219,18 @@ if (dots.instanceColor) dots.instanceColor.needsUpdate = true;
 const highlightMat = new THREE.MeshBasicMaterial({
   vertexColors: true,
   transparent: true,
-  opacity: 1
+  opacity: 1,
+  depthWrite: false
 });
+
 const highlightDots = new THREE.InstancedMesh(dotGeo, highlightMat, DOT_COUNT);
 highlightDots.visible = false;
+
+// force instanceColor buffer allocation
+highlightDots.setColorAt(0, new THREE.Color("#ff0000"));
+if (highlightDots.instanceColor) highlightDots.instanceColor.needsUpdate = true;
+
+highlightDots.renderOrder = 2;
 group.add(highlightDots);
 
 
@@ -1588,11 +1597,6 @@ const HOVER_HOLD_MS = 160; // keep hover for 160ms even if raycast misses
 function setHover(id) {
   if (hoveredId === id) return;
 
-  // reset previously hovered dot
-  if (hoveredId !== null) {
-    dots.setMatrixAt(hoveredId, baseMatrix[hoveredId]);
-  }
-
   hoveredId = id;
   isHovering = (hoveredId !== null);
 
@@ -1609,54 +1613,72 @@ function setHover(id) {
   }
 
   if (hoveredId !== null) {
-    // fade all dots
-    dotMat.opacity = activeFilters.size ? 0.12 : 0.08;
 
-    // decompose hovered dot matrix
+    // fade ALL base dots
+    dotMat.opacity = 0.08;
+    dotMat.needsUpdate = true;
+
+    // bump the directly hovered dot
     baseMatrix[hoveredId].decompose(tmpPos, tmpQuat, tmpScale);
-
-    // highlight dot (crisp)
-    hoverDot.position.copy(tmpPos);
-    hoverDot.scale.setScalar(2.4);
-    hoverDot.visible = true;
-
-    // bump hovered instanced dot
-    const bump = 1.9;
     dummy.position.copy(tmpPos);
     dummy.quaternion.copy(tmpQuat);
-    dummy.scale.copy(tmpScale).multiplyScalar(bump);
+    dummy.scale.copy(tmpScale).multiplyScalar(1.9);
     dummy.updateMatrix();
     dots.setMatrixAt(hoveredId, dummy.matrix);
+    dots.instanceMatrix.needsUpdate = true;
 
-    // show all dots belonging to this project in the highlight layer
-    let k = 0;
-    for (const di of projectDotIds) {
-      highlightDots.setMatrixAt(k, baseMatrix[di]);
-      highlightDots.setColorAt(k, DOT_ITEMS[di].color);
-      k++;
+    // use filterLayers directly — same meshes, same colors, guaranteed to work
+    for (const kind in filterLayers) {
+      filterLayers[kind].count = 0;
+      filterLayers[kind].visible = false;
     }
-    highlightDots.count = k;
-    highlightDots.instanceMatrix.needsUpdate = true;
-    if (highlightDots.instanceColor) highlightDots.instanceColor.needsUpdate = true;
-    highlightDots.visible = true;
 
+    for (const kind in filterLayers) {
+      const layer = filterLayers[kind];
+      let k = 0;
+      for (const di of projectDotIds) {
+        if (DOT_ITEMS[di].label !== kind) continue;
+        dummy.position.copy(dotPos[di]);
+        dummy.scale.setScalar(dotScaleArr[di]);
+        dummy.updateMatrix();
+        layer.setMatrixAt(k, dummy.matrix);
+        k++;
+      }
+      if (k > 0) {
+        layer.count = k;
+        layer.instanceMatrix.needsUpdate = true;
+        layer.visible = true;
+      }
+    }
+
+    highlightDots.visible = false;
+    hoverDot.visible = false;
 
     showTooltipForDot(hoveredId);
     showProjectTitle(hoveredId);
+
   } else {
+
+    // restore base dots
     dotMat.opacity = 0.9;
+    dotMat.needsUpdate = true;
+
+    // hide all filter layers
+    for (const kind in filterLayers) {
+      filterLayers[kind].count = 0;
+      filterLayers[kind].visible = false;
+    }
+
     hoverDot.visible = false;
-    showTooltipForDot(null);
-    showProjectTitle(null);
-  
     highlightDots.visible = false;
     highlightDots.count = 0;
-  
     networkLines.visible = false;
+
+    showTooltipForDot(null);
+    showProjectTitle(null);
   }
-  
+
   dots.instanceMatrix.needsUpdate = true;
-  dotMat.needsUpdate = true;
 }
 
 mount.addEventListener("pointermove", (e) => {
