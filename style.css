@@ -794,3 +794,12 @@ canvas {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
+
+/* ============================================================
+   CONNECTOR LINES — label to dot
+   ============================================================ */
+
+   #connectors line {
+    stroke: rgba(0,0,0,0.15);
+    stroke-width: 1;
+  }

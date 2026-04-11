@@ -1379,7 +1379,6 @@ function hideTooltipUi() {
   tooltip.style.removeProperty("--cat-accent");
 }
 
-/** Same DOM + classes as hover tooltip so filter labels and network labels match. */
 function fillDataBubble(el, item) {
   const slug = categorySlug(item.label);
   el.className = `tooltip tooltip--${slug}`;
@@ -1507,122 +1506,221 @@ function positionProjectTitleForProject(projectIndex) {
 const labelPool = [];
 
 function updateProjectLabels() {
+  const connectorsSVG = document.getElementById("connectors");
+  connectorsSVG.innerHTML = "";
 
   // SHOW LABELS WHEN FILTER ACTIVE
-if (activeFilters.size > 0 && hoveredId === null) {
+  if (activeFilters.size > 0 && hoveredId === null) {
+    labelsEl.innerHTML = "";
+    const rect = renderer.domElement.getBoundingClientRect();
+    const labelData = [];
 
+    for (let i = 0; i < filterDotIds.length; i++) {
+      const id = filterDotIds[i];
+      const item = DOT_ITEMS[id];
+      if (!item) continue;
+
+      const dp = dotPosition[id];
+      if (!dp) continue;
+
+      const p = dp.clone();
+      group.localToWorld(p);
+      p.project(camera);
+
+      const dotX = rect.left + (p.x * 0.5 + 0.5) * rect.width;
+      const dotY = rect.top  + (-p.y * 0.5 + 0.5) * rect.height;
+
+      const div = document.createElement("div");
+      fillProjectLabelBubble(div, item);
+      div.style.left = `${dotX}px`;
+      div.style.top  = `${dotY + 6}px`;
+      labelsEl.appendChild(div);
+
+      labelData.push({ el: div, x: dotX, y: dotY + 6, dotX, dotY });
+    }
+
+    // run collision avoidance
+    resolveCollisions(labelData);
+
+    // draw connector lines from label center to dot
+    for (const d of labelData) {
+      const rb = d.el.getBoundingClientRect();
+      const labelCX = rb.left + rb.width / 2;
+      const labelCY = rb.top  + rb.height / 2;
+
+      const dist = Math.hypot(labelCX - d.dotX, labelCY - d.dotY);
+      if (dist > 20) {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", labelCX);
+        line.setAttribute("y1", labelCY);
+        line.setAttribute("x2", d.dotX);
+        line.setAttribute("y2", d.dotY);
+        connectorsSVG.appendChild(line);
+      }
+    }
+
+    return;
+  }
+
+  // HOVER STATE
+  if (!projectDotIds || projectDotIds.length === 0 || hoveredProjectIndex === null) {
+    labelsEl.innerHTML = "";
+    return;
+  }
+
+  // category super-hub hover — show all project title labels
+if (hoveredProjectIndex < 0) {
   labelsEl.innerHTML = "";
-
   const rect = renderer.domElement.getBoundingClientRect();
+  const labelData = [];
+  const catName = DOT_ITEMS[hoveredId].categoryName;
 
-  for (let i = 0; i < filterDotIds.length; i++) {
+  for (let i = 0; i < DOT_COUNT; i++) {
+    const item = DOT_ITEMS[i];
+    if (item.label !== "Title" || item.categoryName !== catName) continue;
 
-    const id = filterDotIds[i];
-    const item = DOT_ITEMS[id];
-
-    if (!item) continue;
-
-    const div = document.createElement("div");
-    fillProjectLabelBubble(div, item);
-
-    const dp = dotPosition[id];
+    const dp = dotPosition[i];
     if (!dp) continue;
 
     const p = dp.clone();
     group.localToWorld(p);
     p.project(camera);
 
-    const x = rect.left + (p.x * 0.5 + 0.5) * rect.width;
-    const y = rect.top  + (-p.y * 0.5 + 0.5) * rect.height;
+    const dotX = rect.left + (p.x * 0.5 + 0.5) * rect.width;
+    const dotY = rect.top  + (-p.y * 0.5 + 0.5) * rect.height;
 
-    div.style.left = `${x}px`;
-    div.style.top = `${y + 6}px`;
-
+    const div = document.createElement("div");
+    fillProjectLabelBubble(div, item);
+    div.style.left = `${dotX}px`;
+    div.style.top  = `${dotY + 6}px`;
     labelsEl.appendChild(div);
+
+    labelData.push({ el: div, x: dotX, y: dotY + 6, dotX, dotY });
+  }
+
+  resolveCollisions(labelData);
+
+  for (const d of labelData) {
+    const rb = d.el.getBoundingClientRect();
+    const labelCX = rb.left + rb.width / 2;
+    const labelCY = rb.top  + rb.height / 2;
+    const dist = Math.hypot(labelCX - d.dotX, labelCY - d.dotY);
+    if (dist > 20) {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", labelCX);
+      line.setAttribute("y1", labelCY);
+      line.setAttribute("x2", d.dotX);
+      line.setAttribute("y2", d.dotY);
+      connectorsSVG.appendChild(line);
+    }
   }
 
   return;
 }
-  // hide everything if not hovering a project
-  if (!projectDotIds || projectDotIds.length === 0 || hoveredProjectIndex === null) {
-    labelsEl.innerHTML = "";
-    return;
-  }
-  
-  // for category super-hub, show all project title labels
-  if (hoveredProjectIndex < 0) {
-    labelsEl.innerHTML = "";
-    const rect = renderer.domElement.getBoundingClientRect();
-    const catName = DOT_ITEMS[hoveredId].categoryName;
-    for (let i = 0; i < DOT_COUNT; i++) {
-      const item = DOT_ITEMS[i];
-      if (item.label !== "Title" || item.categoryName !== catName) continue;
-      const div = document.createElement("div");
-      fillProjectLabelBubble(div, item);
-      const dp = dotPosition[i];
-      if (!dp) continue;
-      const p = dp.clone();
-      group.localToWorld(p);
-      p.project(camera);
-      const x = rect.left + (p.x * 0.5 + 0.5) * rect.width;
-      const y = rect.top  + (-p.y * 0.5 + 0.5) * rect.height;
-      div.style.left = `${x}px`;
-      div.style.top  = `${y + 6}px`;
-      labelsEl.appendChild(div);
-    }
-    return;
-  }
 
-  // ensure we have enough label divs
   while (labelPool.length < projectDotIds.length) {
     labelPool.push(document.createElement("div"));
   }
 
-  // clear container and re-append only what we need
   labelsEl.innerHTML = "";
-
   const rect = renderer.domElement.getBoundingClientRect();
-
-  let k = 0; // ✅ NEW counter for visible labels only
+  const labelData = [];
+  let k = 0;
 
   for (let n = 0; n < projectDotIds.length; n++) {
     const id = projectDotIds[n];
     if (id === hoveredId) continue;
-  
+
     const item = DOT_ITEMS[id];
     if (!item) continue;
-    if ((item.label || "").toLowerCase() === "title") continue;    
-  
+    if ((item.label || "").toLowerCase() === "title") continue;
+
     const dp = dotPosition[id];
     if (!dp) continue;
-  
+
     const div = labelPool[k++];
     fillProjectLabelBubble(div, item);
 
     const p = dp.clone();
     group.localToWorld(p);
     p.project(camera);
-  
-    const x = rect.left + (p.x * 0.5 + 0.5) * rect.width;
-    const y = rect.top  + (-p.y * 0.5 + 0.5) * rect.height;
-  
-    div.style.left = `${x}px`;
-    div.style.top = `${y + 6}px`;
-  
+
+    const dotX = rect.left + (p.x * 0.5 + 0.5) * rect.width;
+    const dotY = rect.top  + (-p.y * 0.5 + 0.5) * rect.height;
+
+    div.style.left = `${dotX}px`;
+    div.style.top  = `${dotY + 6}px`;
     labelsEl.appendChild(div);
+
+    labelData.push({ el: div, x: dotX, y: dotY + 6, dotX, dotY });
   }
 
-  // remove old category anchor tooltip
+  // run collision avoidance
+  resolveCollisions(labelData);
+
+  // draw connector lines
+  for (const d of labelData) {
+    const rb = d.el.getBoundingClientRect();
+    const labelCX = rb.left + rb.width / 2;
+    const labelCY = rb.top  + rb.height / 2;
+
+    const dist = Math.hypot(labelCX - d.dotX, labelCY - d.dotY);
+    if (dist > 20) {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", labelCX);
+      line.setAttribute("y1", labelCY);
+      line.setAttribute("x2", d.dotX);
+      line.setAttribute("y2", d.dotY);
+      connectorsSVG.appendChild(line);
+    }
+  }
+
+  // category anchor tooltip
   const old = document.getElementById("category-anchor-tooltip");
   if (old) old.remove();
 
-  // show category dot tooltip if hovering a regular project
   if (hoveredProjectIndex !== null && hoveredProjectIndex >= 0) {
     const catName = DOT_ITEMS[hoveredId]?.categoryName;
     const catDotId = catName ? getCategoryDotId(catName) : null;
     if (catDotId !== null) showCategoryAnchorTooltip(catDotId);
   }
+}
 
+function resolveCollisions(labels, iterations = 5) {
+  const padding = 8;
+
+  for (let iter = 0; iter < iterations; iter++) {
+    for (let i = 0; i < labels.length; i++) {
+      const a = labels[i];
+      const ra = a.el.getBoundingClientRect();
+
+      for (let j = i + 1; j < labels.length; j++) {
+        const b = labels[j];
+        const rb = b.el.getBoundingClientRect();
+
+        const overlapX = (ra.left + ra.width / 2) - (rb.left + rb.width / 2);
+        const overlapY = (ra.top + ra.height / 2) - (rb.top + rb.height / 2);
+
+        const minDistX = (ra.width + rb.width) / 2 + padding;
+        const minDistY = (ra.height + rb.height) / 2 + padding;
+
+        if (Math.abs(overlapX) < minDistX && Math.abs(overlapY) < minDistY) {
+          const pushX = (minDistX - Math.abs(overlapX)) / 2 * Math.sign(overlapX) * 0.5;
+          const pushY = (minDistY - Math.abs(overlapY)) / 2 * Math.sign(overlapY) * 0.5;
+
+          a.x += pushX;
+          a.y += pushY;
+          b.x -= pushX;
+          b.y -= pushY;
+
+          a.el.style.left = `${a.x}px`;
+          a.el.style.top  = `${a.y}px`;
+          b.el.style.left = `${b.x}px`;
+          b.el.style.top  = `${b.y}px`;
+        }
+      }
+    }
+  }
 }
 
 function buildNetworkForProject(dotIds, projectIndex) {
