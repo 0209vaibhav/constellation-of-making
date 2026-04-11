@@ -1853,8 +1853,7 @@ function setHover(id) {
 
   if (hoveredId !== null) {
 
-    dotMat.opacity = hoveredProjectIndex < 0 ? 0.06 : 0.08;
-    dotMat.needsUpdate = true;
+    targetOpacity = hoveredProjectIndex < 0 ? 0.06 : 0.08;
 
     // reset all filter layers
     for (const kind in filterLayers) {
@@ -1969,8 +1968,7 @@ function setHover(id) {
 
   } else {
 
-    dotMat.opacity = 0.9;
-    dotMat.needsUpdate = true;
+    targetOpacity = 0.9;
 
     for (const kind in filterLayers) {
       filterLayers[kind].count = 0;
@@ -2044,6 +2042,21 @@ mount.addEventListener("click", () => {
   const JITTER = 0.01 ;
   const DAMP = 0.99;
   const MAX_SPEED = 5; 
+
+// smooth opacity transition for dotMat
+let targetOpacity = 1.0;
+let currentOpacity = 1.0;
+const OPACITY_SPEED = 0.12;
+
+function updateDotOpacity() {
+  if (Math.abs(currentOpacity - targetOpacity) < 0.001) {
+    currentOpacity = targetOpacity;
+  } else {
+    currentOpacity += (targetOpacity - currentOpacity) * OPACITY_SPEED;
+  }
+  dotMat.opacity = currentOpacity;
+  dotMat.needsUpdate = true;
+}
     
 // -------------------- ANIMATE --------------------
 let t = 0;
@@ -2053,6 +2066,7 @@ function animate() {
   t += 1;
 
   controls.update();
+  updateDotOpacity();
 
   const now = performance.now();
 

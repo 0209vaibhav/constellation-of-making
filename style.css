@@ -529,18 +529,27 @@ canvas {
    HOVER TOOLTIP — follows hovered dot
    ============================================================ */
 
-#tooltip.tooltip {
-  position: fixed;
-  z-index: 50;
-  display: none;
-  text-align: left;
-  pointer-events: none;
-  max-width: min(300px, calc(100vw - 24px));
-  white-space: normal;
-  word-wrap: break-word;
-  --cat-accent: #6b7280;
-  filter: drop-shadow(0 10px 28px rgba(0,0,0,0.14));
-}
+   #tooltip.tooltip {
+    position: fixed;
+    z-index: 50;
+    display: none;
+    text-align: left;
+    pointer-events: none;
+    max-width: min(300px, calc(100vw - 24px));
+    white-space: normal;
+    word-wrap: break-word;
+    --cat-accent: #6b7280;
+    filter: drop-shadow(0 10px 28px rgba(0,0,0,0.14));
+  }
+  
+  #tooltip.tooltip[style*="flex"] {
+    animation: tooltipFadeIn 0.05s ease forwards;
+  }
+  
+  @keyframes tooltipFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
 
 /* ============================================================
    LABEL BUBBLES — shown on hover or when filter active
@@ -565,6 +574,7 @@ canvas {
   word-wrap: break-word;
   --cat-accent: #6b7280;
   filter: drop-shadow(0 10px 28px rgba(0,0,0,0.14));
+  opacity: 1;
 }
 
 /* ============================================================
@@ -803,3 +813,18 @@ canvas {
     stroke: rgba(0,0,0,0.15);
     stroke-width: 1;
   }
+
+/* ============================================================
+  CONNECTOR SVG LINES — fade in
+  ============================================================ */
+
+#connectors line {
+  stroke: rgba(0,0,0,0.15);
+  stroke-width: 1;
+  animation: lineFadeIn 0.05s ease forwards;
+}
+
+@keyframes lineFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
