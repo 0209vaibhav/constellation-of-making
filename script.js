@@ -1235,13 +1235,13 @@ for (let i = 0; i < DOT_COUNT; i++) {
   const p = pts[i];
   const label = DOT_ITEMS[i].label;
   const sizeMap = {
-    "Title": 2.2,
-    "Subtitle": 1.6,
-    "Category": 1.8,
-    "Concept": 1.0,
-    "Methods": 1.0,
-    "Concept Text": 0.7,
-    "Methods Text": 0.7
+    "Title": 1.6,
+    "Subtitle": 1.2,
+    "Category": 3.0,
+    "Concept": 0.8,
+    "Methods": 0.8,
+    "Concept Text": 0.6,
+    "Methods Text": 0.6
   };
   const sizeMultiplier = sizeMap[label] || 1.0;
   const s = DOT_SIZE * sizeMultiplier * (0.9 + Math.random() * 0.2);
@@ -2105,7 +2105,7 @@ mount.addEventListener("click", () => {
 // smooth opacity transition for dotMat
 let targetOpacity = 1.0;
 let currentOpacity = 1.0;
-const OPACITY_SPEED = 0.12;
+const OPACITY_SPEED = 0.1;
 
 function updateDotOpacity() {
   if (Math.abs(currentOpacity - targetOpacity) < 0.001) {
