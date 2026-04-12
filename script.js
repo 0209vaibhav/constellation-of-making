@@ -1024,7 +1024,9 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffffff);
 
 const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 2000);
-camera.position.set(0, 0, 260);
+const isMobile = window.innerWidth < 600;
+camera.position.set(0, 0, isMobile ? 420 : 260);
+
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -1081,7 +1083,7 @@ function zoomByFactor(factor) {
 
 function recenterView() {
   controls.target.set(0, 0, 0);
-  camera.position.set(0, 0, 260);
+  camera.position.set(0, 0, isMobile ? 420 : 260);
   controls.update();
 }
 
@@ -1999,11 +2001,68 @@ function setHover(id) {
 }
 
 mount.addEventListener("pointermove", (e) => {
+  if (e.pointerType === "touch") return; // handled by touch events
   const rect = renderer.domElement.getBoundingClientRect();
   mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
   mouse.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+  mouseDirty = true;
+});
 
-  mouseDirty = true; // ADD THIS
+// ── Touch support ──
+let touchStartX = 0;
+let touchStartY = 0;
+let touchMoved = false;
+
+mount.addEventListener("touchstart", (e) => {
+  const touch = e.touches[0];
+  touchStartX = touch.clientX;
+  touchStartY = touch.clientY;
+  touchMoved = false;
+}, { passive: true });
+
+mount.addEventListener("touchmove", (e) => {
+  const touch = e.touches[0];
+  const dx = touch.clientX - touchStartX;
+  const dy = touch.clientY - touchStartY;
+  if (Math.hypot(dx, dy) > 8) touchMoved = true;
+}, { passive: true });
+
+mount.addEventListener("touchend", (e) => {
+  if (touchMoved) return; // was a pan/rotate gesture, not a tap
+
+  const touch = e.changedTouches[0];
+  const rect = renderer.domElement.getBoundingClientRect();
+
+  mouse.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
+
+  raycaster.setFromCamera(mouse, camera);
+  const hits = raycaster.intersectObject(dots);
+
+  if (hits.length) {
+    const tappedId = hits[0].instanceId;
+
+    // tap same dot = unlock
+    if (lockedId === tappedId) {
+      lockedId = null;
+      mount.classList.remove("is-locked");
+      setHover(null);
+      return;
+    }
+
+    // tap new dot = lock it
+    setHover(tappedId);
+    lockedId = tappedId;
+    mount.classList.add("is-locked");
+
+  } else {
+    // tap empty space = unlock
+    if (lockedId !== null) {
+      lockedId = null;
+      mount.classList.remove("is-locked");
+      setHover(null);
+    }
+  }
 });
 
 mount.addEventListener("click", () => {
