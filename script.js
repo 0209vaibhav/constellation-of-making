@@ -30,7 +30,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "LayoutLab is a computational floor planning tool that generates and compares spatial layouts within a defined boundary, enabling rapid exploration of efficiency, proportions, and planning strategies.",
+      "Generates spatial layouts enabling rapid exploration of planning strategies.",
   
     methods: [
       "Python Solver",
@@ -42,7 +42,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "A Python-based rectangle packing solver generates layout variants, while SVG-based web visualization enables interactive comparison, parametric control, and real-time evaluation of spatial metrics.",
+      "Python solver produces layout variants visualized through SVG interface.",
   
   },
 
@@ -50,7 +50,7 @@ const PROJECTS = [
   {
     title: "IBEX",
     category: "Computation",
-    subtitle: "AI-Driven Real Estate & Urban Development Platform",
+    subtitle: "AI-Driven Real Estate & Urban Dev App",
    
     concept: [
       "AI-Driven Design Platform",
@@ -62,7 +62,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "IBEX is an AI-driven platform for real estate and urban development that generates and evaluates masterplans through parameter-driven workflows, integrating design, data, and decision-making.",
+      "Parameter-driven AI platform for urban masterplanning.",
   
     methods: [
       "Parametric & Generative Workflows",
@@ -74,7 +74,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Parametric modeling in Rhino and Grasshopper is combined with API integrations and AI-based visualization to generate masterplans, architectural variants, and automated context-aware reports.",
+      "Rhino and Grasshopper generate masterplans with automated AI reports.",
   },
 
   // ---- PROJECT 03 - MEMENTO ----------------------------------------
@@ -93,7 +93,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "MEMENTO is a real-time urban experience platform that transforms everyday commutes into interactive journeys through participatory mapping and spatial storytelling.",
+      "Transforms everyday commutes into interactive urban journeys",
   
     methods: [
       "Computational Design",
@@ -105,7 +105,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Geospatial mapping, real-time data integration, and machine learning classification are combined to structure, visualize, and personalize urban experiences dynamically.",
+      "Geospatial mapping and machine learning personalize urban experiences.",
   
   },
 
@@ -113,7 +113,7 @@ const PROJECTS = [
   {
     title: "ML in MEMENTO",
     category: "Computation",
-    subtitle: "ML Pipeline for Automated Urban Experience Classification",
+    subtitle: "Automated Urban Experience Classification",
   
     concept: [
       "Machine Learning",
@@ -125,7 +125,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "The Machine Learning pipeline in MEMENTO automates classification and tagging of public urban content. It uses three models for category classification, tag prediction, and duration estimation. The system transforms raw unstructured data into structured, semantically rich urban experiences aligned with MEMENTO taxonomy.",
+      "Automates urban content classification using prediction models.",
   
     methods: [
       "Supervised Learning",
@@ -137,7 +137,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "The ML pipeline uses Python, BeautifulSoup, Selenium, and Scikit-learn. Logistic Regression, Random Forest, and Decision Tree models classify categories, tags, and duration. Cloud-based retraining and API integration automate classification and enrich the MEMENTO dataset.",
+      "Scikit-learn trains classification models with cloud retraining and integration.",
   
   },
   
@@ -145,7 +145,7 @@ const PROJECTS = [
   {
     title: "Studio In Flux",
     category: "Computation",
-    subtitle: "How spatial configurations influence movement within the Columbia GSAPP Studio",
+    subtitle: "Spatial configurations and studio movement",
   
     concept: [
       "Responsive Workspace Design",
@@ -157,7 +157,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "Studio In Flux explores how spatial arrangements influence movement and interaction within the GSAPP studio. The project transforms invisible behavioral flows into actionable insights through data-driven workspace analysis.",
+      "Explores how spatial arrangements influence movement in the studio.",
   
     methods: [
       "Data-Informed Spatial Intervention",
@@ -169,14 +169,14 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Agent-based simulation models movement patterns. Behavioral parameters are derived from observation. Heatmaps and layout efficiency metrics evaluate workspace performance and collaboration potential.",
+      "Agent-based simulation and heatmaps evaluate circulation score.",
   },
   
   // ---- PROJECT 06 - The Urban Fringe ----------------------------------------
   {
     title: "The Urban Fringe",
     category: "Computation",
-    subtitle: "Spatial Thresholds Between Public Sidewalk Life and Private Eating Enterprises",
+    subtitle: "Where sidewalks meet dining",
   
     concept: [
       "Sidewalk Café Encroachment",
@@ -188,7 +188,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "The Urban Fringe examines the blurred threshold between public sidewalks and private dining spaces. The research maps sidewalk encroachments and analyzes their impact on accessibility and comfort.",
+      "Mapping sidewalk encroachment and pedestrian accessibility.",
   
     methods: [
       "Data Collection & Classification",
@@ -200,7 +200,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Geospatial mapping, radiation analysis, and simulation tools identify urban vulnerabilities. Computational interventions propose climate-responsive sidewalk improvements.",
+      "Geospatial mapping and analysis identify sidewalk interventions.",
   },
 
   // ---- PROJECT 07 - BENTO ----------------------------------------
@@ -219,7 +219,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "BENTO is a data-driven retail design platform that generates adaptive store layouts using behavioral analytics and computational geometry.",
+      "Generates adaptive retail layouts using behavioral analytics and computation.",
   
     methods: [
       "Computational Modeling",
@@ -231,14 +231,14 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Rhino and Grasshopper generate adjacency layouts. NYC Open Data and behavioral analytics inform layout optimization and performance evaluation.",
+      "Rhino and Grasshopper generate layouts informed by behavioral analytics.",
   },
 
   // ---- PROJECT 08 - Urban Computing ----------------------------------------
   {
     title: "Urban Computing",
     category: "Computation",
-    subtitle: "Exploratory Research on Data Driven Urban Computational Design",
+    subtitle: "Data-driven urban computational research",
   
     concept: [
       "Spatial Simulation",
@@ -250,7 +250,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "Urban Computing explores sidewalk spatial dynamics using radiation mapping and environmental analysis to improve pedestrian comfort.",
+      "Explores sidewalk dynamics using radiation mapping to improve walkability.",
   
     methods: [
       "Computational Modeling",
@@ -262,7 +262,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Environmental simulations and radiation analysis inform green infrastructure placement and walkability improvements.",
+      "Environmental and radiation analysis inform green infrastructure strategies.",
   },
 
   // ---- PROJECT 09 - Hue Knew ----------------------------------------
@@ -281,7 +281,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "Hue Knew is an interactive film recognition game using blurred visuals and performance analytics.",
+      "Film recognition game identifying movies through blurred visuals and analytics.",
   
     methods: [
       "Web Development",
@@ -293,14 +293,14 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "TMDB API provides film data. D3 and Chart.js visualize performance analytics.",
+      "TMDB API and D3 power film data and performance visualization.",
   },
 
   // ---- PROJECT 10 - Oblivion to Odyssey ----------------------------------------
   {
     title: "Oblivion to Odyssey",
     category: "Computation",
-    subtitle: "Understanding the disconnection between people and their urban surroundings",
+    subtitle: "Urban disconnection and spatial awareness",
   
     concept: [
       "Urban Engagement",
@@ -312,7 +312,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "This research explores disengagement during commutes and proposes immersive urban exploration experiences.",
+      "Proposing immersive experiences for disengaged commuters.",
   
     methods: [
       "Behavioral Research",
@@ -324,14 +324,14 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Gaze tracking and spatial computing prototypes analyze commuter behavior and engagement.",
+      "Spatial computing prototypes analyze commuter engagement behavior.",
   },
 
   // ---- PROJECT 11 - Gaze Tracker ----------------------------------------
   {
     title: "Gaze Tracker",
     category: "Computation",
-    subtitle: "Mapping and Shaping Attention during OBLIVIAN",
+    subtitle: "Mapping Attention during OBLIVIAN",
   
     concept: [
       "Attention Mapping",
@@ -343,7 +343,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "Gaze Tracker maps visual attention during commutes and nudges users to reconnect with their surroundings.",
+      "Maps visual attention during commutes for urban re-engagement.",
   
     methods: [
       "Computer Vision",
@@ -355,14 +355,14 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Computer vision tracks gaze direction and provides real-time feedback.",
+      "Computer vision tracks gaze delivering behavioral nudges via mobile notifications.",
   },
 
   // ---- PROJECT 12 - Familial Housing ----------------------------------------
   {
     title: "Familial Housing",
     category: "Architecture",
-    subtitle: "Scrutinization of the Familial sensitivity in Mumbai",
+    subtitle: "Scrutinization of the Familial sensitivity",
   
     concept: [
       "Familial Fragility in Redevelopment",
@@ -374,7 +374,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "The project reclaims the disappearing familial fabric within Mumbai's housing culture by challenging redevelopment models. It explores how architecture can restore kinship, shared routines, and spatial bonding, introducing a bottom up housing allocation model Form Follows Preference.",
+      "Reclaims Mumbai's communal housing through a bottom-up allocation model.",
   
     methods: [
       "Housing Pattern Mapping",
@@ -386,7 +386,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Multi scalar site studies, interviews, and pattern language generation informed the project. Rhino, Grasshopper, and BIM workflows enabled algorithmic massing, modular housing allocation, and participatory planning.",
+      "Field research and Grasshopper workflows enabled algorithmic massing and planning.",
   },
 
   // ---- PROJECT 13 - High Performance Center ----------------------------------------
@@ -405,7 +405,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "The High Performance Center wraps around a cricket ground using three arms connected by a continuous ramp. The architecture blends movement, spectatorship, and program into a dynamic civic sports facility.",
+      "Sports facility wrapping a cricket ground blending movement and spectatorship.",
   
     methods: [
       "Facade Optimization",
@@ -417,7 +417,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Parametric ramp modeling and iterative facade studies generated hundreds of variations. Rhino and Grasshopper workflows guided massing and circulation resolution.",
+      "Parametric ramp modeling and facade studies generated hundreds of variations.",
   
   },
 
@@ -437,7 +437,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "In Transit Hub reimagines short term housing as layered typologies for transient populations, integrating movement, rest, and social interaction.",
+      "Layered housing typologies integrating movement, rest, and social interaction.",
   
     methods: [
       "Data Driven Planning",
@@ -449,7 +449,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Site morphology, user studies, and occupancy mapping guided massing and typology generation.",
+      "Site morphology and occupancy mapping guided massing and typology generation.",
   
   },
 
@@ -469,7 +469,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "The Administration Building introduces a courtyard centered layout and parametric brick facade within an industrial campus.",
+      "Courtyard corporate building with parametric brick facade",
   
     methods: [
       "Facade Optimization",
@@ -481,7 +481,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Grasshopper workflows generated responsive brick facade geometries optimized for daylight and ventilation.",
+      "Grasshopper generated brick geometries optimized for daylight and ventilation.",
   
   },
 
@@ -501,7 +501,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "The entrance block emerges from the boundary wall forming a thin arched roof defining arrival. Alternating built volumes and courtyards introduce daylight, ventilation, and interaction, creating a sensitive threshold for workers and visitors.",
+      "Boundary wall rising into thin arched roof alternating with courtyards.",
   
     methods: [
       "Arched Roof Geometry Optimization",
@@ -513,7 +513,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Rhino and Grasshopper were used to refine arch geometry and optimize daylight. Courtyard insertion strategies improved thermal comfort and circulation.",
+      "Rhino and Grasshopper refined arch geometry optimizing daylight and comfort.",
   
   },
 
@@ -533,7 +533,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "The canteen block creates a quiet architectural space within an industrial campus. A monolithic exterior opens internally to light wells and social spaces.",
+      "Monolithic industrial canteen opening inward to light wells and community.",
   
     methods: [
       "Light Funnel Modeling",
@@ -545,7 +545,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Rhino based modeling tested skylight performance, circulation paths, and spatial zoning.",
+      "Rhino modeling tested skylight performance circulation and distinct user zoning.",
   
   },
 
@@ -553,7 +553,7 @@ const PROJECTS = [
   {
     title: "Discrete Construction",
     category: "Architecture",
-    subtitle: "Modular Structural System in Customizable Housing",
+    subtitle: "Modular Customizable Housing System",
   
     concept: [
       "Discrete Construction Logic",
@@ -565,7 +565,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "The project proposes modular housing where users assemble prefabricated components to customize homes.",
+      "Housing assembled from prefabricated modular components to customize space.",
   
     methods: [
       "Housing Typology Prototyping",
@@ -577,7 +577,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Grasshopper parametric systems generated modular units allowing stacking and spatial flexibility.",
+      "Grasshopper generated modular units enabling flexible spatial configurations.",
   },
 
   // ---- PROJECT 19 - Lokal Parklet ----------------------------------------
@@ -596,7 +596,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "Lokal Parklet transforms a parking bay into a shaded pavilion framing the New York skyline.",
+      "Parking bay transformed into shaded timber pavilion framing NYC skyline.",
   
     methods: [
       "Sunlight Simulation",
@@ -608,7 +608,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Rhino parametric modeling generated modular timber elements and filtered light behavior.",
+      "Rhino parametric modeling generated modular timber elements optimized for light.",
   
   },
   
@@ -628,7 +628,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "A youth focused intervention blending recreation, learning, and living under a warped timber canopy.",
+      "Youth intervention blending recreation and living under warped timber canopy.",
   
     methods: [
       "Parametric Geometry",
@@ -640,7 +640,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Grasshopper generated roof geometry integrated with terrain based massing.",
+      "Grasshopper roof geometry integrates terrain massing with cultural.",
   },
 
   // ---- PROJECT 21 - Objects Institutions Identities ----------------------------------------
@@ -659,7 +659,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "This project explores relationships between everyday objects, institutions, and identity formation within Kohima village through spatial ethnography.",
+      "Explores how Kohima village objects shape cultural institutions and identity.",
   
     methods: [
       "Object Trajectory Mapping",
@@ -671,7 +671,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Fieldwork, interviews, and spatial mapping created a layered narrative of cultural identity.",
+      "Fieldwork and object trajectory mapping created a layered cultural narrative.",
   },
 
   // ---- PROJECT 22 - Vertical Village ----------------------------------------
@@ -690,7 +690,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "Vertical Village reinterprets rural living within vertical housing through terraces, courtyards, and community clusters.",
+      "Reinterprets rural community living within vertical housing and social clusters.",
   
     methods: [
       "Daylight Analysis",
@@ -702,7 +702,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Parametric massing explored ventilation, daylight, and community interaction.",
+      "Parametric massing explored ventilation daylight and community interaction typologies.",
   },
 
   // ---- PROJECT 23 - Membrum Vestigial ----------------------------------------
@@ -721,7 +721,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "Membrum Vestigial supports disappearing craft communities through cooperative architecture.",
+      "Supporting craft communities through shared production and gathering.",
   
     methods: [
       "Craft Mapping",
@@ -733,7 +733,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Programmatic zoning and structural experimentation shaped cooperative workspace.",
+      "Programmatic zoning and folded plate exploration shaped cooperative identity.",
   },
 
   // ---- PROJECT 24 - Bari in Coexistence ----------------------------------------
@@ -752,7 +752,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "Bari in Coexistence proposes floating housing for flood prone regions.",
+      "Housing coexisting with rising floodwaters through buoyant bamboo foundations.",
   
     methods: [
       "Buoyant Foundation",
@@ -764,7 +764,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Buoyant foundations and modular systems create resilient housing.",
+      "Buoyant bamboo foundations and flood-responsive housing modules.",
   
   },
 
@@ -784,7 +784,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "Sangam Gully reconnects fragmented historic neighborhoods.",
+      "Reviving gully continuity in fragmented historic pols.",
   
     methods: [
       "Spatial Insertions",
@@ -796,7 +796,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Roof based spatial generation shaped the design.",
+      "Roof-first generation and figure-ground mapping shaped the regeneration strategy.",
   
   },
 
@@ -816,7 +816,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "This study documents architectural evolution of Sidhpur through typological and historical analysis.",
+      "Typological analysis of Sidhpur's historic architectural fabric.",
   
     methods: [
       "Facade Documentation",
@@ -828,7 +828,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Measured drawings and documentation captured architectural evolution.",
+      "Measured drawings, architectural evolution and facade documentation.",
   
   },
 
@@ -848,7 +848,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "Fly Man Go translates bird morphology into wildlife observation architecture.",
+      "Translates bird morphology into wildlife cabins designed for sensory immersion.",
   
     methods: [
       "Sustainable Materials",
@@ -860,7 +860,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Biomimetic analysis and parametric modeling shaped wildlife cabins.",
+      "Biomimetic and parametric modeling shaped cabin typologies.",
   
   },
 
@@ -880,7 +880,7 @@ const PROJECTS = [
     ],
   
     conceptText:
-      "This project explores tensile and pneumatic structures using Frei Otto principles.",
+      "Explores tensile structures through soap film experiments and scale fabrication.",
   
     methods: [
       "Soap Film Modeling",
@@ -892,7 +892,7 @@ const PROJECTS = [
     ],
   
     methodsText:
-      "Soap film experiments generated catenary structures fabricated at scale.",
+      "Catenary geometries fabricated using laser cutting and membranes.",
   
   },
 
