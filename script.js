@@ -1771,6 +1771,38 @@ function resolveCollisions(labels, iterations = 5) {
   }
 }
 
+function buildAllIdleNetworkLines() {
+  const P = dotPos;
+  const idleSegs = [];
+
+  for (let i = 0; i < DOT_COUNT; i++) {
+    const item = DOT_ITEMS[i];
+    if (!item || item.label !== "Title" || item.isSharedCategory) continue;
+
+    const hubP = P[i];
+    if (!hubP) continue;
+
+    for (let j = 0; j < DOT_COUNT; j++) {
+      if (j === i) continue;
+      if (DOT_ITEMS[j].projectIndex !== item.projectIndex) continue;
+      const p = P[j];
+      if (!p) continue;
+      idleSegs.push(hubP.x, hubP.y, hubP.z, p.x, p.y, p.z);
+    }
+  }
+
+  if (idleSegs.length === 0) return;
+
+  const mesh = networkLinesByType["title-subtitle"];
+  mesh.material.color.set(0xaaaaaa);
+  mesh.material.opacity = 0.3;
+  const arr = new Float32Array(idleSegs);
+  mesh.geometry.setAttribute("position", new THREE.BufferAttribute(arr, 3));
+  mesh.geometry.computeBoundingSphere();
+  mesh.frustumCulled = false;
+  mesh.visible = true;
+}
+
 function buildNetworkForProject(dotIds, projectIndex) {
   if (!dotIds || dotIds.length < 1 || projectIndex === null) {
     hideAllNetworkLines();
@@ -1804,6 +1836,10 @@ function buildNetworkForProject(dotIds, projectIndex) {
 
   // CASE B — regular project hover
   hideAllNetworkLines();
+
+  // reset title-subtitle back to hover colors after idle state
+  networkLinesByType["title-subtitle"].material.color.set(0x000000);
+  networkLinesByType["title-subtitle"].material.opacity = 0.5;
 
   const titleDot    = dotIds.find(i => DOT_ITEMS[i].label === "Title");
   const subtitleDot = dotIds.find(i => DOT_ITEMS[i].label === "Subtitle");
@@ -2277,7 +2313,12 @@ if (!isHovering && !isPointerDown) {
 dots.instanceMatrix.needsUpdate = true;
 updateFilterLayers();
 
+if (!isHovering && hoveredId === null && activeFilters.size === 0) {
+  if (t % 3 === 0) buildAllIdleNetworkLines();
 }
+
+}
+
 
   // keep tooltip + project labels positioned
   if (hoveredId !== null) {

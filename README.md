@@ -36,3 +36,7 @@ Rather than a list or a grid, this is a living field — where projects float as
 ---
 
 *make your own constellation — fork this repo and edit the `PROJECTS` array in `script.js`*
+
+i have an idea, what if when someone opens the webpage, the info moda apppears and it has an option to click to not see it again, so once the user has seen the info modal it doesn't appear gain and again and appears if needed by the user by clicking on the info icon
+
+in this way the info modal can act like a loading screen 
