@@ -206,12 +206,13 @@ canvas {
    INFO MODAL — left nav (scroll-spy)
    ============================================================ */
 
-#info-nav {
+  #info-nav {
   width: 100px;
   flex-shrink: 0;
   padding: 20px 0 20px 20px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   position: relative;
 }
 
@@ -257,7 +258,7 @@ canvas {
 .nav-line {
   width: 1px;
   flex: 1;
-  min-height: 28px;
+  min-height: 50px;
   background: rgba(0,0,0,0.08);
   margin-top: 4px;
 }
@@ -294,12 +295,12 @@ canvas {
    INFO MODAL — right scroll content
    ============================================================ */
 
-#info-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px 24px 20px 20px;
-  scroll-behavior: smooth;
-}
+   #info-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px 600px 20px;
+    scroll-behavior: smooth;
+  }
 
 #info-content::-webkit-scrollbar {
   width: 3px;
